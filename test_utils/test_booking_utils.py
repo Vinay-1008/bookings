@@ -1,11 +1,10 @@
-from http.client import responses
 
 import requests
 import json
 
-from config.link_apis import AUTHENTICATION, GET_ALL_BOOKING_IDS, GET_BOOKING_IDS_WITH_FIRSTNAME_AND_LASTNAME, \
+from configuration.booking_link_apis import AUTHENTICATION, GET_ALL_BOOKING_IDS, GET_BOOKING_IDS_WITH_FIRSTNAME_AND_LASTNAME, \
     GET_BOOKING_IDS_WITH_CHECKIN_AND_CHECKOUT, GET_BOOKING_DETAILS, CREATE_BOOKING, PARTIAL_UPDATE_BOOKING_DETAILS, \
-    DELETE_BOOKING_DETAILS_WITH_ID
+    DELETE_BOOKING_DETAILS_WITH_ID1
 
 
 def create_token_auth(username, password):
@@ -25,9 +24,14 @@ def get_booking_ids_with_firstname_and_lastname(firstname, lastname):
     response = requests.get(f"{GET_BOOKING_IDS_WITH_FIRSTNAME_AND_LASTNAME}booking?firstname={firstname}&lastname={lastname}")
     return response.json()
 
-def get_booking_ids_with_checkin_and_checkout(checkin, checkout):
-    response = requests.get(f"{GET_BOOKING_IDS_WITH_CHECKIN_AND_CHECKOUT}booking?checkin={checkin}&checkout={checkout}")
-    return response.json()
+def get_booking_ids_with_checkin_and_checkout1(checkin, checkout):
+    auth_response = requests.post("https://restful-booker.herokuapp.com/auth", {
+    "username" : "admin",
+    "password" : "password123"
+        }, headers= {"User-Agent":"PostmanRuntime/7.42.0"})
+    headers = {"Authorization": auth_response.json()["token"]}
+    response = requests.get(f"{GET_BOOKING_IDS_WITH_CHECKIN_AND_CHECKOUT}booking?checkin={checkin}&checkout={checkout}", headers=headers)
+    return response.json(), response.status_code
 
 def get_all_booking_details(id):
     response = requests.get(f"{GET_BOOKING_DETAILS}{id}")
@@ -56,5 +60,5 @@ def partial_update_bookings(id, depositpaid):
         return response.json(), response.status_code
 
 def delete_booking_details_with_id(id):
-    response = requests.delete(f"{DELETE_BOOKING_DETAILS_WITH_ID}{id}")
+    response = requests.delete(f"{DELETE_BOOKING_DETAILS_WITH_ID1}{id}")
     return response.status_code
